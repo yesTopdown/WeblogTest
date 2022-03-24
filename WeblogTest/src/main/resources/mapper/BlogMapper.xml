@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.weblogtest.mapper.BlogMapper">
+  <resultMap id="blogMap" type="com.example.weblogtest.pojo.Blog">
+      <id column="id" property="id"/>
+      <result column="commentabled" property="commentabled"/>
+      <result column="content" property="content"/>
+      <result column="create_time" property="createTime"/>
+      <result column="description" property="description"/>
+      <result column="first_picture" property="firstPicture"/>
+      <result column="flag" property="flag"/>
+      <result column="published" property="published"/>
+      <result column="recommend" property="recommend"/>
+      <result column="share_statement" property="shareStatement"/>
+      <result column="title" property="title"/>
+      <result column="update_time" property="updateTime"/>
+      <result column="views" property="views"/>
+      <result column="appreciation" property="appreciation"/>
+<!--      多对一&ndash;&gt;-->
+<!--      <association property="user" javaType="com.example.weblogtest.pojo.User">-->
+<!--          <result column="user_id" property="id"/>-->
+<!--          <result column="username" property="username"/>-->
+<!--          <result column="password" property="password"/>-->
+<!--          <result column="avatar" property="avatar"/>-->
+<!--          <result column="create_time" property="createTime"/>-->
+<!--          <result column="email" property="email"/>-->
+<!--          <result column="nickname" property="nickname"/>-->
+<!--          <result column="type" property="type"/>-->
+<!--          <result column="update_time" property="updateTime"/>-->
+<!--      </association>-->
+      <association property="user" resultMap="com.example.weblogtest.mapper.UserMapper.userMap"/>
+<!--      一对一  标签&ndash;&gt;-->
+      <association property="type" javaType="com.example.weblogtest.pojo.Type">
+              <result column="type_id" property="id"/>
+              <result column="name" property="name"/>
+      </association>
+<!--      评论一对多&ndash;&gt;-->
+<!--      <collection property="comments" ofType="com.example.weblogtest.pojo.Comment">-->
+<!--          <result column="id" property="id"/>-->
+<!--          <result column="admin_comment" property="adminComment"/>-->
+<!--          <result column="nickname" property="nickname"/>-->
+<!--          <result column="content" property="content"/>-->
+<!--          <result column="avatar" property="avatar"/>-->
+<!--          <result column="create_time" property="createTime"/>-->
+<!--          <result column="email" property="email"/>-->
+<!--      </collection>-->
+      <collection property="comments" resultMap="com.example.weblogtest.mapper.CommentsMapper.CommentsMap"/>
+<!--      <collection property="tags" ofType="com.example.weblogtest.pojo.Tag">-->
+<!--          <result column="id" property="id"/>-->
+<!--          <result column="name" property="name"/>-->
+<!--      </collection>-->
+      <collection property="tags" resultMap="com.example.weblogtest.mapper.TagMapper.tagsMap"/>
+  </resultMap>
+<!--    查找用户所有的blogs-->
+    <select id="findAllBlog" resultMap="blogMap">
+        SELECT * FROM `t_blog` left join `t_type` on t_blog.`type_id`=t_type.`id` left join `t_user` on t_blog.`user_id`=t_user.`id`
+        <where>
+            <if test="id != null">
+                t_user.`id`=#{id}
+            </if>
+        </where>
+    </select>
+    <select id="findBlogById" resultMap="blogMap">
+        SELECT * FROM `t_blog` left join `t_type` on t_blog.`type_id`=t_type.`id` left join `t_user` on t_blog.`user_id`=t_user.`id`
+        <where>
+            <if test="blogId!=null">
+                t_blog.id=#{blog_id}
+            </if>
+        </where>
+    </select>
+<!--    分页查找mybatis-->
+    <select id="findAllPages" resultType="com.example.weblogtest.pojo.Blog" resultMap="blogMap">
+        SELECT `t_blog`.*,t_user.*,t_type.*  FROM `t_blog` left join `t_user` on `t_blog`.user_id=`t_user`.id left join `t_type` on t_blog.`type_id`=t_type.`id`
+            <where>
+                <if test="id != null">
+                    `t_blog`.user_id=#{id}
+                </if>
+            </where>
+        limit #{page},#{size}
+    </select>
+    <select id="findCount" resultType="int">
+        select count(`t_blog`.id) from `t_blog` left join `t_user` on `t_blog`.user_id=`t_user`.id
+    </select>
+</mapper>

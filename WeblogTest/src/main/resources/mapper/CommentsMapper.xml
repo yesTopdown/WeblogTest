@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.weblogtest.mapper.CommentsMapper">
+    <resultMap id="CommentsMap" type="com.example.weblogtest.pojo.Comment">
+        <result property="id" column="id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="email" column="email"/>
+        <result property="content" column="content"/>
+        <result property="avatar" column="avatar"/>
+        <result property="createTime" column="create_time"/>
+        <result property="adminComment" column="admin_comment"/>
+        <result property="parentComment" column="parent_comment_id"/>
+        <association property="blog" javaType="com.example.weblogtest.pojo.Blog">
+            <id column="blog_id" property="id"/>
+            <result column="commentabled" property="commentabled"/>
+            <result column="content" property="content"/>
+            <result column="create_time" property="createTime"/>
+            <result column="description" property="description"/>
+            <result column="first_picture" property="firstPicture"/>
+            <result column="flag" property="flag"/>
+            <result column="published" property="published"/>
+            <result column="recommend" property="recommend"/>
+            <result column="share_statement" property="shareStatement"/>
+            <result column="title" property="title"/>
+            <result column="update_time" property="updateTime"/>
+            <result column="views" property="views"/>
+            <result column="appreciation" property="appreciation"/>
+        </association>
+    </resultMap>
+    <select id="findBlogComment" resultMap="CommentsMap">
+        select * from t_comment where blog_id=#{id}
+    </select>
+    <insert id="addComments" >
+        INSERT INTO t_comment(
+            avatar,content,create_time,email,nickname,
+                              blog_id,parent_comment_id,admin_comment
+        )
+        VALUES(
+            #{avatar},#{content},#{create_time},#{email},#{nickname},
+               #{blog_id},#{parent_comment_id},
+               <if test="admin_comment==false">
+                  b'0'
+               </if>
+               <if test="admin_comment==true">
+                  b'1'
+               </if>
+        )
+    </insert>
+</mapper>

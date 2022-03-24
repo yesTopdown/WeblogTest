@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.weblogtest.mapper.UserMapper">
+  <resultMap id="userMap" type="com.example.weblogtest.pojo.User">
+      <result column="id" property="id"/>
+      <result column="username" property="username"/>
+      <result column="password" property="password"/>
+      <result column="avatar" property="avatar"/>
+      <result column="create_time" property="createTime"/>
+      <result column="email" property="email"/>
+      <result column="nickname" property="nickname"/>
+      <result column="type" property="type"/>
+      <result column="update_time" property="updateTime"/>
+      <collection property="blogs" ofType="com.example.weblogtest.pojo.Blog">
+          <result column="user_id" property="id"/>
+          <result column="commentabled" property="commentabled"/>
+          <result column="content" property="content"/>
+          <result column="create_time" property="createTime"/>
+          <result column="description" property="description"/>
+          <result column="first_picture" property="firstPicture"/>
+          <result column="flag" property="flag"/>
+          <result column="published" property="published"/>
+          <result column="recommend" property="recommend"/>
+          <result column="share_statement" property="shareStatement"/>
+          <result column="title" property="title"/>
+          <result column="update_time" property="updateTime"/>
+          <result column="views" property="views"/>
+          <result column="appreciation" property="appreciation"/>
+      </collection>
+  </resultMap>
+<!--    一对多-->
+    <select id="findAll" resultMap="userMap">
+        SELECT * FROM t_user u LEFT JOIN t_blog b ON b.user_id=u.id
+    </select>
+    <select id="findNameAndPass" resultMap="userMap" parameterType="string">
+        SELECT * FROM t_user u LEFT JOIN t_blog b ON b.user_id=u.id
+        where u.username=#{username} and u.password=#{password}
+    </select>
+    <select id="checkName" resultType="com.example.weblogtest.pojo.User" resultMap="userMap">
+        select username from t_user where username = #{username}
+    </select>
+    <insert id="saveUser" >
+        insert into t_user
+            (
+             <if test="avatar!=null">
+              avatar,
+             </if>
+             email,nickname,password,username)
+            values (
+            <if test="avatar!=null">
+                    #{avatar},
+             </if>
+                    #{email},
+                    #{nickname},
+                    #{password},
+                    #{username})
+    </insert>
+</mapper>

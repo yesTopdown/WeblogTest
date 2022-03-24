@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.weblogtest.mapper.TypesMapper">
+    <resultMap id="typesMap" type="com.example.weblogtest.pojo.Type">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <collection property="blogs" ofType="com.example.weblogtest.pojo.Blog">
+            <result column="id" property="id"/>
+            <result column="commentabled" property="commentabled"/>
+            <result column="content" property="content"/>
+            <result column="create_time" property="createTime"/>
+            <result column="description" property="description"/>
+            <result column="first_picture" property="firstPicture"/>
+            <result column="flag" property="flag"/>
+            <result column="published" property="published"/>
+            <result column="recommend" property="recommend"/>
+            <result column="share_statement" property="shareStatement"/>
+            <result column="title" property="title"/>
+            <result column="update_time" property="updateTime"/>
+            <result column="views" property="views"/>
+            <result column="appreciation" property="appreciation"/>
+        </collection>
+    </resultMap>
+    <select id="findAllTypes" resultMap="typesMap">
+        SELECT * FROM t_type RIGHT join t_blog on t_blog.`type_id`=t_type.`id`
+    </select>
+    <select id="findBlogsByTypes" resultMap="com.example.weblogtest.mapper.BlogMapper.blogMap">
+        SELECT * FROM t_blog LEFT JOIN t_type ON t_blog.`type_id`=t_type.`id`
+            LEFT JOIN t_user ON `t_blog`.user_id=`t_user`.id WHERE t_type.id=#{id}
+         <if test="offset !=null and size !=null">
+           limit #{offset},#{size}
+         </if>
+    </select>
+    <select id="findCountTypes"  resultType="int" >
+        SELECT COUNT(t_type.`id`) FROM t_type LEFT JOIN t_blog ON t_blog.`type_id`=t_type.`id` WHERE  t_type.id=#{id}
+    </select>
+</mapper>

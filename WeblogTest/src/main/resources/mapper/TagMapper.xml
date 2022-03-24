@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.weblogtest.mapper.TagMapper">
+    <resultMap id="tagsMap" type="com.example.weblogtest.pojo.Tag">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <collection property="blogs" ofType="com.example.weblogtest.pojo.Blog">
+            <result column="id" property="id"/>
+            <result column="commentabled" property="commentabled"/>
+            <result column="content" property="content"/>
+            <result column="create_time" property="createTime"/>
+            <result column="description" property="description"/>
+            <result column="first_picture" property="firstPicture"/>
+            <result column="flag" property="flag"/>
+            <result column="published" property="published"/>
+            <result column="recommend" property="recommend"/>
+            <result column="share_statement" property="shareStatement"/>
+            <result column="title" property="title"/>
+            <result column="update_time" property="updateTime"/>
+            <result column="views" property="views"/>
+            <result column="appreciation" property="appreciation"/>
+        </collection>
+    </resultMap>
+    <select id="findAllTags" resultMap="tagsMap">
+        SELECT `t_tag`.* FROM `t_tag` RIGHT JOIN `t_blog_tags` ON
+            `t_blog_tags`.`tags_id`=`t_tag`.`id`
+              RIGHT JOIN `t_blog` ON
+            `t_blog_tags`.`blogs_id`=`t_blog`.`id`
+    </select>
+<!--    通过tag查找blogs 或者 通过 blog  查找 tags-->
+    <select id="findTagsBlogs" resultMap="com.example.weblogtest.mapper.BlogMapper.blogMap">
+        SELECT * FROM `t_blog`,`t_tag`,`t_blog_tags`,t_user
+        WHERE `t_blog_tags`.`blogs_id`=`t_blog`.`id`
+        AND `t_blog_tags`.`tags_id`=`t_tag`.`id` and `t_blog`.user_id=`t_user`.id
+        <if test="id!=null">
+            AND `t_tag`.`id`=#{id}
+        </if>
+    </select>
+</mapper>
